@@ -55,10 +55,13 @@ this.atmosphereService.connect('https://your-server.com/endpoint')
     );
 ```
 
-### Send Messages
+### Send Notifications
 
 ```typescript
-this.atmosphereService.sendMessage('Your message here');
+import {Notification} from '@desiderati/atmosphere';
+
+const notification = new Notification('Your client (user) identification', 'Your message');
+this.atmosphereService.sendNotification(notification);
 ```
 
 ## API Reference
@@ -67,22 +70,30 @@ this.atmosphereService.sendMessage('Your message here');
 
 #### Methods
 
-- **connect(url: string): Observable<string>**
+- **connect(url: string, customAtmosphereRequest?: CustomAtmosphereRequest): Observable<string>**
 
   Establishes a connection to the specified URL using WebSocket (with fallback to long-polling).
 
   Parameters:
     - `url`: The URL to connect to
+    - `customAtmosphereRequest`: Optional custom configuration for the Atmosphere connection
 
   Returns:
     - An Observable that emits messages received from the server
 
-- **sendMessage(message: string): void**
+- **sendNotification(notification: Notification): void**
 
-  Sends a message to the connected server.
+  Sends a notification to the connected server.
 
   Parameters:
-    - `message`: The message to send
+    - `notification`: The notification object to send
+
+- **isInitialized(): boolean**
+
+  Checks if the Atmosphere connection is initialized.
+
+  Returns:
+    - `true` if the connection is initialized, `false` otherwise
 
 #### Connection Configuration
 
@@ -93,7 +104,32 @@ The service uses the following default configuration:
 - Max Reconnect Attempts: 7
 - Primary Transport: WebSocket
 - Fallback Transport: Long-polling
-- Debug Level: debug
+- Debug Level: info
+
+### Types
+
+#### Notification
+
+A class representing a notification to be sent to the server.
+
+```typescript
+import {Notification} from '@desiderati/atmosphere';
+
+// Create a notification with a payload.
+const notification = new Notification('Your client (user) identification', 'Your message');
+```
+
+#### CustomAtmosphereRequest
+
+An interface that extends the Atmosphere.js Request interface with additional options:
+
+```typescript
+interface CustomAtmosphereRequest extends AtmosphereRequest {
+    logFunction?: ((msg: string) => void) | undefined;
+}
+```
+
+- `logFunction`: Optional custom logging function for debug messages
 
 ## Development
 

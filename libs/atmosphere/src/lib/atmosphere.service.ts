@@ -16,26 +16,60 @@
  * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 import {Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 // Imports atmosphere.js from LIB installed via NPM.
-let atmosphere = require('atmosphere.js');
+import * as Atmosphere from 'atmosphere.js';
+
+import {Notification} from './notification';
+import AtmosphereRequest = Atmosphere.Request;
 
 @Injectable({
     providedIn: 'root',
 })
 export class AtmosphereService {
 
-    private socket: any;
+    private socket: any = null;
 
     // noinspection JSUnusedGlobalSymbols
-    connect(url: string): Observable<string> {
+    connect(
+        url: string,
+        customAtmosphereRequest?: CustomAtmosphereRequest
+    ): Observable<string> {
+
+        let self = this;
+
+        function subscribe(atmosphereRequest: {}) {
+            if (Atmosphere && Atmosphere.subscribe) {
+                self.socket = Atmosphere.subscribe(atmosphereRequest);
+            }
+        }
+
+        function unsubscribe() {
+            if (Atmosphere && Atmosphere.unsubscribe) {
+                Atmosphere.unsubscribe();
+                self.socket = null;
+            }
+        }
+
+        if (this.isInitialized()) {
+            unsubscribe();
+        }
+
         return new Observable<string>((observer: Observer<string>) => {
+            function debugMsgIfEnabled(msg: string) {
+                if (customAtmosphereRequest?.logLevel === 'debug') {
+                    if (customAtmosphereRequest?.logFunction !== undefined) {
+                        customAtmosphereRequest.logFunction(msg);
+                    } else {
+                        console.log(msg);
+                    }
+                }
+            }
 
             // noinspection JSUnusedGlobalSymbols
-            const atmosphereRequest = {
+            let atmosphereRequest = {
                 // Mandatory parameters.
                 url: url,
 
@@ -46,13 +80,14 @@ export class AtmosphereService {
                 transport: 'websocket',
                 fallbackTransport: 'long-polling',
                 trackMessageLength: true,
-                logLevel: 'debug',
-                uuid: undefined,
+                enableProtocol: true,
+                logLevel: 'info',
+                uuid: 0,
 
                 // Operations.
                 onOpen: (response: any) => {
                     const msg = 'Atmosphere connected using ' + response.transport + '!';
-                    console.log(msg);
+                    debugMsgIfEnabled(msg);
 
                     // Carry the UUID. This is required if you want to call
                     // subscribe(request) again.
@@ -61,7 +96,7 @@ export class AtmosphereService {
 
                 onReopen: (_: undefined, response: any) => {
                     const msg = 'Atmosphere reconnected using ' + response.transport + '!';
-                    console.log(msg);
+                    debugMsgIfEnabled(msg);
                 },
 
                 onMessage: (response: any) => {
@@ -70,14 +105,16 @@ export class AtmosphereService {
                     try {
                         json = JSON.parse(message);
                     } catch (e) {
-                        console.error('This doesn\'t look like a valid JSON: ', message);
+                        console.error('Notification doesn\'t look like a valid JSON: ', message);
+                        observer.error('Notification doesn\'t look like a valid JSON! See console for more information.');
                         return;
                     }
                     observer.next(json.payload);
                 },
 
                 onClose: () => {
-                    console.log('Atmosphere connection was closed!');
+                    let msg = 'Atmosphere connection was closed!';
+                    debugMsgIfEnabled(msg);
                 },
 
                 onError: (response: any) => {
@@ -86,34 +123,52 @@ export class AtmosphereService {
                 },
 
                 onTransportFailure: (errorMsg: string, request: any) => {
-                    console.warn(errorMsg);
+                    console.warn('Transport Failure:', errorMsg);
 
                     request.fallbackTransport = 'long-polling';  // Always forcing long-polling!
                     const msg = 'Sorry, but it wasn\'t possible to establish a connection using ' + request.transport + '! ' +
                         'Falling back to ' + request.fallbackTransport + '.';
-                    console.log(msg);
+                    debugMsgIfEnabled(msg);
                 },
 
                 onReconnect: (request: any) => {
-                    console.log('Connection lost, trying to reconnect. ' +
-                        'Trying to reconnect in ' + request.reconnectInterval + 'ms.');
+                    let msg = 'Connection lost, trying to reconnect. ' +
+                        'Trying to reconnect in ' + request.reconnectInterval + 'ms.';
+                    debugMsgIfEnabled(msg);
+                },
+
+                onClientTimeout(request: any) {
+                    const msg = 'Client closed the connection after a timeout. Reconnecting in ' + request.reconnectInterval + 'ms.';
+                    debugMsgIfEnabled(msg);
+
+                    setTimeout(() => {
+                        subscribe(request);
+                    }, request.reconnectInterval);
                 }
             };
 
-            if (typeof atmosphere !== 'undefined') {
-                this.socket = atmosphere.subscribe(atmosphereRequest);
+            if (customAtmosphereRequest !== undefined) {
+                subscribe({...atmosphereRequest, ...customAtmosphereRequest});
+            } else {
+                subscribe(atmosphereRequest)
             }
 
-            return () => {
-                atmosphere!.unsubscribe();
-            };
+            return () => unsubscribe();
         });
     }
 
     // noinspection JSUnusedGlobalSymbols
-    sendMessage(message: string): void {
-        if (this.socket) {
-            this.socket.push(JSON.stringify({message}));
+    sendNotification(notification: Notification): void {
+        if (this.isInitialized()) {
+            this.socket.push(JSON.stringify(notification));
         }
     }
+
+    isInitialized() {
+        return this.socket !== null;
+    }
+}
+
+interface CustomAtmosphereRequest extends AtmosphereRequest {
+    logFunction?: ((msg: string) => void) | undefined;
 }
