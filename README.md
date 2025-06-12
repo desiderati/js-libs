@@ -1,4 +1,4 @@
-# Desiderati JS Libs
+# Desiderati JS Libs [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A collection of JavaScript/TypeScript libraries for Angular applications.
 
@@ -125,8 +125,3 @@ npm publish
 ## Author
 
 Felipe Desiderati <felipedesiderati@springbloom.dev> (https://github.com/desiderati)
-
-## [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-

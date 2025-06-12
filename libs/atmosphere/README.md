@@ -1,4 +1,4 @@
-# Atmosphere Service Library
+# Atmosphere Service Library [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 An Angular service wrapper for the [atmosphere.js](https://github.com/Atmosphere/atmosphere-javascript) library,
 providing WebSocket and long-polling communication capabilities for Angular applications.
@@ -19,13 +19,15 @@ Key features:
 
 In the root of your Angular project, create or edit the `.npmrc` file:
 
-```.npmrc
+```conf
 # Registry Default
 registry=https://registry.npmjs.org/
 
 # Private Repoflow Registry for @desiderati
 @desiderati:registry=https://api.repoflow.io/npm/desiderati/js-libs/
 ```
+
+After that, install the package:
 
 ```bash
 npm install @desiderati/atmosphere@1.0.0
@@ -188,7 +190,3 @@ ng test
 ## Author
 
 Felipe Desiderati <felipedesiderati@springbloom.dev> (https://github.com/desiderati)
-
-## [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
