@@ -3,7 +3,7 @@
   "name": "@desiderati/atmosphere",
   "version": "1.0.0",
   "description": "An Angular service wrapper for atmosphere.js",
-  "homepage": "https://desiderati.github.io/js-libs/atmosphere",
+  "homepage": "https://desiderati.github.io/js-libs/libs/atmosphere",
   "publishConfig": {
     "registry": "https://api.repoflow.io/npm/desiderati/js-libs"
   },
