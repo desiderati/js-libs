@@ -1,9 +1,27 @@
 {
+  "author": "Felipe Desiderati <felipedesiderati@springbloom.dev> (https://github.com/desiderati)",
   "name": "@desiderati/atmosphere",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "An Angular service wrapper for atmosphere.js",
+  "homepage": "https://desiderati.github.io/js-libs/atmosphere",
+  "publishConfig": {
+    "registry": "https://api.repoflow.io/npm/desiderati/js-libs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/desiderati/js-libs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/desiderati/js-libs/issues"
+  },
+  "keywords": [
+    "atmosphere"
+  ],
+  "license": "MIT",
   "peerDependencies": {
     "@angular/common": "^19.2.0",
-    "@angular/core": "^19.2.0"
+    "@angular/core": "^19.2.0",
+    "atmosphere.js": "^4.0.1"
   },
   "dependencies": {
     "tslib": "^2.3.0"

@@ -1,62 +1,132 @@
-# JsLibs
+# Desiderati JS Libs
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.13.
+A collection of JavaScript/TypeScript libraries for Angular applications.
 
-## Development server
+## Overview
 
-To start a local development server, run:
+JS-Libs is a monorepo containing reusable Angular libraries developed by Felipe Desiderati. These libraries provide
+various functionalities to enhance Angular applications.
+
+## Prerequisites and Repoflow.io Registration
+
+1. Install Node and NPM. Ensure Node.js and `npm` are installed on your machine.
+   If not, download and install them from [Node.js official website](https://nodejs.org/).
+
+2. Configuring `npm` for the private repository. Execute this login command:
+
+    ```bash
+    npm login --registry https://api.repoflow.io/npm/desiderati/js-libs --auth-type legacy
+    ```
+
+3. Publishing artifacts. Navigate to your package directory in the terminal and execute:
+
+    ```bash
+    npm publish --registry https://api.repoflow.io/npm/desiderati/js-libs
+    ```
+    > This prepares npm to publish packages to your specified private repository.
+
+## Libraries
+
+### Atmosphere
+
+An Angular service wrapper for the [atmosphere.js](https://github.com/Atmosphere/atmosphere-javascript) library,
+providing WebSocket and long-polling communication capabilities for Angular applications.
+
+#### Key Features
+
+- WebSocket communication with automatic fallback to long-polling
+- Reconnection handling
+- Observable-based API for reactive programming
+- Simple message sending interface
+
+#### Installation
 
 ```bash
-ng serve
+npm install @desiderati/atmosphere@1.0.0
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will
-automatically reload whenever you modify any of the source files.
+#### Usage
 
-## Code scaffolding
+```typescript
+import {AtmosphereService} from '@desiderati/atmosphere';
+import {Notification} from '@desiderati/atmosphere';
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+@Component({
+    // ...
+})
+export class YourComponent {
+    constructor(private atmosphereService: AtmosphereService) {
+    }
 
-```bash
-ng generate component component-name
+    connect() {
+        this.atmosphereService.connect('https://your-server.com/endpoint')
+            .subscribe({
+                next: (msg: string) => {
+                    console.log('Received message:', msg);
+                    // Handle the message
+                },
+                error: (err: any) => {
+                    console.error('Connection error:', err);
+                    // Handle the error
+                }
+            });
+    }
+
+    sendMessage() {
+        const notification = new Notification('Your client (user) identification', 'Your message');
+        this.atmosphereService.sendNotification(notification);
+    }
+}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+For more details, see the [Atmosphere Library](./libs/atmosphere/README.md).
 
-```bash
-ng generate --help
-```
+## Development
 
-## Building
+### Building All Libraries
 
-To build the project run:
+To build all libraries in the monorepo:
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build
-optimizes your application for performance and speed.
+### Building a Specific Library
 
-## Running unit tests
+To build a specific library (e.g., atmosphere):
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+```bash
+ng build atmosphere
+```
+
+### Running Tests
+
+To run tests for all libraries:
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+To run tests for a specific library:
 
 ```bash
-ng e2e
+ng test atmosphere
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Publishing
 
-## Additional Resources
+After building a library, you can publish it to npm:
 
-For more information on using the Angular CLI, including detailed command references, visit
-the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+cd dist/atmosphere
+npm publish
+```
+
+## Author
+
+Felipe Desiderati <felipedesiderati@springbloom.dev> (https://github.com/desiderati)
+
+## [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+

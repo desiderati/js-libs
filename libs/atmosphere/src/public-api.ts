@@ -21,3 +21,4 @@
  * Public API Surface of atmosphere
  */
 export * from './lib/atmosphere.service';
+export * from './lib/notification';

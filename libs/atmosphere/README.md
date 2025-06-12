@@ -17,8 +17,18 @@ Key features:
 
 ## Installation
 
+In the root of your Angular project, create or edit the `.npmrc` file:
+
+```.npmrc
+# Registry Default
+registry=https://registry.npmjs.org/
+
+# Private Repoflow Registry for @desiderati
+@desiderati:registry=https://api.repoflow.io/npm/desiderati/js-libs/
+```
+
 ```bash
-npm install @desiderati/atmosphere
+npm install @desiderati/atmosphere@1.0.0
 ```
 
 ## Usage
@@ -43,16 +53,16 @@ export class YourComponent {
 
 ```typescript
 this.atmosphereService.connect('https://your-server.com/endpoint')
-    .subscribe(
-        (message) => {
-            console.log('Received message:', message);
+    .subscribe({
+        next: (msg: string) => {
+            console.log('Received message:', msg);
             // Handle the message
         },
-        (error) => {
-            console.error('Connection error:', error);
+        error: (err: any) => {
+            console.error('Connection error:', err);
             // Handle the error
         }
-    );
+    });
 ```
 
 ### Send Notifications
@@ -100,7 +110,7 @@ this.atmosphereService.sendNotification(notification);
 The service uses the following default configuration:
 
 - Content Type: application/json
-- Reconnect Interval: 5000ms
+- Reconnect Interval: 5000 ms
 - Max Reconnect Attempts: 7
 - Primary Transport: WebSocket
 - Fallback Transport: Long-polling
@@ -150,11 +160,13 @@ This command will compile your project, and the build artifacts will be placed i
 Once the project is built, you can publish your library by following these steps:
 
 1. Navigate to the `dist` directory:
+
    ```bash
    cd dist/atmosphere
    ```
 
 2. Run the `npm publish` command to publish your library to the npm registry:
+
    ```bash
    npm publish
    ```
@@ -172,3 +184,11 @@ ng test
 - [Atmosphere.js Documentation](https://github.com/Atmosphere/atmosphere-javascript)
 - [Angular Documentation](https://angular.dev)
 - [RxJS Documentation](https://rxjs.dev)
+
+## Author
+
+Felipe Desiderati <felipedesiderati@springbloom.dev> (https://github.com/desiderati)
+
+## [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
